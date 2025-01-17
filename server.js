@@ -1,19 +1,20 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const leaderboardRoutes = require('./routes/leaderboardRoute');
 
 dotenv.config();
 
 const app = express();
 
 //Middleware to parse JSON
-app.use(express.json());
+app.use(cors());
+app.use(bodyParser.json());
 
-// Base route
-app.get('/', (req, res) => {
-    res.send('API is Running...');
-});
+app.use('/api/leaderboards', leaderboardRoutes);
 
 // Start the server
-app.listen(process.env.PORT || 5000, () => {
+app.listen(process.env.PORT || 4000, () => {
     console.log(`Server running on port ${process.env.PORT}`);
 });
