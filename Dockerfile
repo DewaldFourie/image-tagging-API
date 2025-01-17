@@ -1,7 +1,10 @@
 # syntax = docker/dockerfile:1
 
 # Adjust NODE_VERSION as desired
-ARG NODE_VERSION=20.11.0
+
+=======
+ARG NODE_VERSION=20.18.0
+>>>>>>> 65413945e1b37b950b0f6c67235012a64669646c
 FROM node:${NODE_VERSION}-slim AS base
 
 LABEL fly_launch_runtime="Node.js"
