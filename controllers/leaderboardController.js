@@ -25,6 +25,7 @@ exports.addScore = async (req, res) => {
         `);
         const result = await pool.query(
         `
+        
         INSERT INTO leaderboards (game_id, player_name, score) VALUES ($1, $2, $3) RETURNING *;
         `,
             [game_id, player_name, score]
