@@ -15,15 +15,17 @@ exports.getLeaderboard = async (req, res) => {
 exports.addScore = async (req, res) => {
     try {
         const { game_id, player_name, score } = req.body;
-        const result = await pool.query(
-            `
+        await pool.query(`
             CREATE TABLE IF NOT EXISTS leaderboards (
                 id SERIAL PRIMARY KEY,
                 game_id VARCHAR(255) NOT NULL,
                 player_name VARCHAR(255) NOT NULL,
                 score VARCHAR(255) NOT NULL
             );
-            INSERT INTO leaderboards (game_id, player_name, score) VALUES ($1, $2, $3) RETURNING *;
+        `);
+        const result = await pool.query(
+        `
+        INSERT INTO leaderboards (game_id, player_name, score) VALUES ($1, $2, $3) RETURNING *;
         `,
             [game_id, player_name, score]
         );
