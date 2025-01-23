@@ -1,38 +1,32 @@
 const pool = require('../models/leaderboardModel');
+const { getLeaderboard } = require('../models/leaderboardModel');
+const supabase = require('../supabase');
 
 // Get the leaderboard data 
 exports.getLeaderboard = async (req, res) => {
     const { gameId } = req.params;
     try {
-        const result = await pool.query('SELECT * FROM leaderboards WHERE game_id = $1 ORDER BY score ASC', [gameId]);
-        res.json(result.rows);
+        const data = await getLeaderboard(gameId);
+        res.json(data);
     } catch (err) {
+        console.error('Error fetching leaderboard data:', err.message);
         res.status(500).json({ error: 'Failed to fetch leaderboard data' });
     }
 };
+
 
 // Add a new leaderboard entry
 exports.addScore = async (req, res) => {
     try {
         const { game_id, player_name, score } = req.body;
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS leaderboards (
-                id SERIAL PRIMARY KEY,
-                game_id VARCHAR(255) NOT NULL,
-                player_name VARCHAR(255) NOT NULL,
-                score VARCHAR(255) NOT NULL
-            );
-        `);
-        const result = await pool.query(
-        `
-        
-        INSERT INTO leaderboards (game_id, player_name, score) VALUES ($1, $2, $3) RETURNING *;
-        `,
-            [game_id, player_name, score]
-        );
+        const { data, error } = await supabase
+            .from('leaderboards')
+            .insert({ game_id, player_name, score })
+        if (error) {
+            throw error
+        }
         res.status(201).json({
-            message: "Score added successfully",
-            data: result.rows[0],
+            message: "Score added successfully"
         });
     } catch (err) {
         console.error("Error adding score:", err.message);
@@ -42,12 +36,21 @@ exports.addScore = async (req, res) => {
     }
 };
 
+
 // Delete a score entry from the leaderboard
 exports.deleteScore = async (req, res) => {
     const { id } = req.params;
     try {
-        await pool.query('DELETE FROM leaderboards WHERE id = $1', [id]);
-        res.json({ message: 'Score deleted successfully' });
+        const { data, error } = await supabase
+            .from('leaderboards')
+            .delete()
+            .eq('id', id)
+        if (error) {
+            throw error
+        }
+        res.status(201).json({ 
+            message: 'Score deleted successfully'
+        });
     } catch (err) {
         res.status(500).json({ error: 'Failed to delete score' });
     }

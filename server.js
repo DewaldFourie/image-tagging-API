@@ -1,8 +1,10 @@
+const supabase = require('./supabase');
 const express = require('express');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const leaderboardRoutes = require('./routes/leaderboardRoute');
+
 
 dotenv.config();
 
